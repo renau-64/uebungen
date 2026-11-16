@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Wie viel Einfluss hat der Betriebsrat?</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:'Comic Sans MS','Comic Neue','Chalkboard SE',cursive,sans-serif;
+background:#F4F7FB;color:#222}
+.wrap{max-width:980px;margin:0 auto;padding:18px}
+h1{font-size:26px;margin:4px 0 6px;padding:10px 16px;background:#F2F2F2;border:2px solid #222;border-radius:14px;
+display:inline-block}
+.auftrag{border:2.5px solid #222;background:#fff;padding:10px 14px;font-size:19px;margin:10px 0 16px}
+.chip{display:inline-block;padding:10px 14px;margin:6px;border:2px solid #7F7F7F;border-radius:12px;background:#fff;
+font-size:18px;cursor:pointer;user-select:none;min-height:44px}
+.chip.sel{border-color:#0070C0;box-shadow:0 0 0 3px #9DC3E6;background:#EAF2FB}
+.chip.ok{border-color:#00A050;background:#E2F4E8}.chip.bad{border-color:#C00000;background:#FBE4E4}
+.pool{min-height:70px;border:2px dashed #A6A6A6;border-radius:14px;padding:8px;background:#fff;margin-bottom:14px}
+.kats{display:flex;gap:14px;flex-wrap:wrap}.kat{flex:1;min-width:220px;background:#fff;border:2px solid #222;
+border-radius:14px;min-height:160px}.kat h2{margin:0;padding:8px 12px;font-size:20px;background:#D9E2F3;
+border-bottom:2px solid #222;border-radius:12px 12px 0 0}.kat .ziel{padding:8px;min-height:110px;cursor:pointer}
+.text{font-size:20px;line-height:2.4;background:#fff;border:2px solid #222;border-radius:14px;padding:14px 18px}
+.luecke{display:inline-block;min-width:130px;border-bottom:2.5px solid #222;text-align:center;cursor:pointer;
+padding:0 6px;color:#0070C0;line-height:1.4}.luecke.ok{background:#E2F4E8}.luecke.bad{background:#FBE4E4}
+.zeile{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #7F7F7F;border-radius:12px;
+padding:10px 12px;margin:8px 0;font-size:19px}.zeile .t{flex:1}
+.btn{font-family:inherit;font-size:18px;padding:10px 18px;border-radius:12px;border:2px solid #222;background:#fff;
+cursor:pointer;margin:4px}.btn.on{background:#0070C0;color:#fff;border-color:#0070C0}
+.btn.main{background:#222;color:#fff}.korr{color:#0070C0;font-size:17px;margin-top:4px}
+.feedback{margin-top:16px;font-size:20px;padding:12px 16px;border-radius:12px;display:none}
+.feedback.gut{display:block;background:#E2F4E8;border:2px solid #00A050}
+.feedback.fast{display:block;background:#FFF2CC;border:2px solid #F4B400}
+.paare{display:flex;gap:30px}.paare .sp{flex:1}.p-ok{opacity:.95}
+.leiste{margin-top:14px}
+</style></head><body><div class="wrap"><h1>Wie viel Einfluss hat der Betriebsrat?</h1><div class="auftrag">Bringe die vier Pläne mit ▲ und ▼ in eine Reihenfolge: oben der schwächste Einfluss des Betriebsrats, unten der stärkste.</div><div id="app"></div></div><script>const DATA = {"id": "rf1", "typ": "reihenfolge", "titel": "Wie viel Einfluss hat der Betriebsrat?", "auftrag": "Bringe die vier Pläne mit ▲ und ▼ in eine Reihenfolge: oben der schwächste Einfluss des Betriebsrats, unten der stärkste.", "elemente": ["Neue Lagerhalle: Der Chef informiert den Betriebsrat und berät mit ihm. Entscheiden darf er allein.", "Kündigung eines Lageristen: Der Chef muss den Betriebsrat vorher anhören, sonst ist die Kündigung unwirksam. Danach darf er auch gegen die Meinung des Betriebsrats kündigen.", "Einstellung eines Zimmerers: Der Betriebsrat kann die Zustimmung verweigern. Dann darf der Chef erst einmal nicht einstellen – nur ein Gericht kann die Zustimmung ersetzen.", "Arbeitsbeginn der Azubis: Ohne Zustimmung des Betriebsrats geht nichts. Sonst entscheidet die Einigungsstelle."], "url": "https://renau-64.github.io/uebungen/WR9_Mitbestimmung_im_Unternehmen_rf1.html"};
+const D = DATA; const LOES = new URLSearchParams(location.search).get('loesung') === '1';
+const $ = (s, e=document) => e.querySelector(s); const el = (t, c, h) => {const x=document.createElement(t);
+ if(c) x.className=c; if(h!==undefined) x.innerHTML=h; return x;};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let sel = null;
+function select(chip){ if(sel) sel.classList.remove('sel'); sel = (sel===chip)?null:chip; if(sel) sel.classList.add('sel'); }
+function fb(ok, total){ const f=$('#fb'); f.className='feedback '+(ok===total?'gut':'fast');
+ f.innerHTML = ok===total ? '🎉 Super, alles richtig! Mache jetzt einen Screenshot deiner Lösung.'
+   : `${ok} von ${total} richtig – versuche es noch einmal (rot markiert).`; }
+const app = $('#app');
+function leiste(check){ const l=el('div','leiste'); const b=el('button','btn main','Prüfen'); b.onclick=check;
+ const r=el('button','btn','Nochmal'); r.onclick=()=>location.reload(); l.append(b,r); app.append(l, el('div','feedback'));
+ app.lastChild.id='fb'; }
+
+if (D.typ==='zuordnen'){
+ const pool=el('div','pool'); app.append(pool); const kats=el('div','kats'); app.append(kats);
+ const zs=D.kategorien.map((k,i)=>{const d=el('div','kat'); d.append(el('h2','',k)); const z=el('div','ziel'); z.dataset.k=i;
+  z.onclick=()=>{ if(sel){ z.append(sel); sel.classList.remove('sel','ok','bad'); sel=null; } }; d.append(z); kats.append(d); return z;});
+ pool.onclick=(e)=>{ if(e.target===pool && sel){ pool.append(sel); sel.classList.remove('sel'); sel=null; } };
+ shuffle(D.begriffe).forEach(([t,k])=>{ const c=el('span','chip',t); c.dataset.k=k; c.onclick=(e)=>{e.stopPropagation(); const z=c.parentElement;
+  if(sel && sel!==c && z.classList.contains('ziel')){ z.append(sel); sel.classList.remove('sel','ok','bad'); sel=null; } else select(c);};
+  (LOES? zs[k] : pool).append(c); });
+ leiste(()=>{ let ok=0; document.querySelectorAll('.chip').forEach(c=>{ const z=c.parentElement; c.classList.remove('ok','bad');
+   if(z.dataset.k!==undefined){ const r = z.dataset.k===c.dataset.k; c.classList.add(r?'ok':'bad'); if(r) ok++; } });
+   fb(ok, D.begriffe.length); });
+}
+if (D.typ==='lueckentext'){
+ const parts = D.text.split(/\[\[(.+?)\]\]/); const t=el('div','text'); const words=[];
+ parts.forEach((p,i)=>{ if(i%2===0){ t.append(document.createTextNode(p)); } else { const l=el('span','luecke', LOES? p : '&nbsp;');
+  l.dataset.a=p; words.push(p); l.onclick=()=>{ if(sel){ if(l.dataset.w){ pool.append(mk(l.dataset.w)); }
+   l.textContent=sel.textContent; l.dataset.w=sel.textContent; sel.remove(); sel=null; l.classList.remove('ok','bad'); }
+   else if(l.dataset.w){ pool.append(mk(l.dataset.w)); l.innerHTML='&nbsp;'; delete l.dataset.w; } }; t.append(l);} });
+ const pool=el('div','pool'); const mk=(w)=>{const c=el('span','chip',w); c.onclick=()=>select(c); return c;};
+ if(!LOES) shuffle(words.concat(D.extra||[])).forEach(w=>pool.append(mk(w)));
+ app.append(pool, t);
+ leiste(()=>{ let ok=0; document.querySelectorAll('.luecke').forEach(l=>{ const r=(l.dataset.w||'')===l.dataset.a;
+  l.classList.remove('ok','bad'); l.classList.add(r?'ok':'bad'); if(r) ok++; }); fb(ok, words.length); });
+}
+if (D.typ==='wahrfalsch'){
+ D.aussagen.forEach((a,i)=>{ const z=el('div','zeile'); const t=el('div','t',a.text); z.append(t);
+  ['wahr','falsch'].forEach(v=>{ const b=el('button','btn',v==='wahr'?'✔ wahr':'✘ falsch'); b.dataset.v=v;
+   b.onclick=()=>{ z.querySelectorAll('.btn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); z.dataset.v=v; };
+   if(LOES && ((v==='wahr')===a.wahr)){ b.classList.add('on'); z.dataset.v=v; } z.append(b); });
+  if(LOES && !a.wahr && a.korrektur){ t.append(el('div','korr','Richtig: '+a.korrektur)); }
+  app.append(z); });
+ leiste(()=>{ let ok=0; document.querySelectorAll('.zeile').forEach((z,i)=>{ const a=D.aussagen[i]; const r=(z.dataset.v==='wahr')===a.wahr && z.dataset.v;
+  z.style.borderColor = r?'#00A050':'#C00000'; if(r) ok++; z.querySelectorAll('.korr').forEach(k=>k.remove());
+  if(r && !a.wahr && a.korrektur) z.querySelector('.t').append(el('div','korr','Richtig: '+a.korrektur)); });
+  fb(ok, D.aussagen.length); });
+}
+if (D.typ==='reihenfolge'){
+ const liste=el('div',''); app.append(liste);
+ const items = LOES ? D.elemente.slice() : shuffle(D.elemente);
+ const draw=()=>{ liste.innerHTML=''; items.forEach((t,i)=>{ const z=el('div','zeile'); z.append(el('b','',(i+1)+'.'), el('div','t',t));
+  const up=el('button','btn','▲'); up.onclick=()=>{ if(i>0){[items[i-1],items[i]]=[items[i],items[i-1]]; draw();}};
+  const dn=el('button','btn','▼'); dn.onclick=()=>{ if(i<items.length-1){[items[i+1],items[i]]=[items[i],items[i+1]]; draw();}};
+  z.append(up,dn); liste.append(z); }); };
+ draw();
+ leiste(()=>{ let ok=0; liste.querySelectorAll('.zeile').forEach((z,i)=>{ const r=items[i]===D.elemente[i];
+  z.style.borderColor=r?'#00A050':'#C00000'; if(r) ok++; }); fb(ok, items.length); });
+}
+if (D.typ==='paare'){
+ const box=el('div','paare'); const L=el('div','sp'), R=el('div','sp'); box.append(L,R); app.append(box);
+ const farben=['#DEEAF6','#E2EFD9','#FFF2CC','#FBE4D5','#EDE0F5','#D9F2F2','#F8D9E6'];
+ let links=null, n=0; const zu={};
+ D.paare.forEach((p,i)=>{ const c=el('span','chip',p[0]); c.dataset.i=i; c.style.display='block';
+  c.onclick=()=>{ if(c.dataset.p) return; if(links) links.classList.remove('sel'); links=c; c.classList.add('sel'); }; L.append(c); });
+ (LOES? D.paare.map((p,i)=>[p[1],i]) : shuffle(D.paare.map((p,i)=>[p[1],i]))).forEach(([t,i])=>{ const c=el('span','chip',t);
+  c.dataset.i=i; c.style.display='block'; c.onclick=()=>{ if(!links||c.dataset.p) return; const f=farben[n++%farben.length];
+   links.style.background=f; c.style.background=f; links.dataset.p=c.dataset.i; c.dataset.p=links.dataset.i;
+   zu[links.dataset.i]=c.dataset.i; links.classList.remove('sel'); links=null; }; R.append(c); });
+ if(LOES){ L.querySelectorAll('.chip').forEach((c,i)=>{ const f=farben[i%farben.length]; c.style.background=f;
+  R.querySelector(`.chip[data-i="${i}"]`).style.background=f; zu[i]=String(i); }); }
+ leiste(()=>{ let ok=0; L.querySelectorAll('.chip').forEach(c=>{ const r=zu[c.dataset.i]===c.dataset.i; c.classList.remove('ok','bad');
+  c.classList.add(r?'ok':'bad'); if(r) ok++; }); fb(ok, D.paare.length); });
+}
+if (D.typ==='quiz'){
+ D.fragen.forEach((q,qi)=>{ const z=el('div','zeile'); z.style.display='block'; z.append(el('div','t','<b>'+(qi+1)+'.</b> '+q.frage));
+  const o=el('div',''); q.optionen.forEach((t,oi)=>{ const b=el('button','btn',t); b.onclick=()=>{ o.querySelectorAll('.btn').forEach(x=>x.classList.remove('on'));
+   b.classList.add('on'); z.dataset.v=oi; }; if(LOES && oi===q.richtig){ b.classList.add('on'); z.dataset.v=oi; } o.append(b); });
+  z.append(o); app.append(z); });
+ leiste(()=>{ let ok=0; document.querySelectorAll('.zeile').forEach((z,i)=>{ const r=String(D.fragen[i].richtig)===z.dataset.v;
+  z.style.borderColor=r?'#00A050':'#C00000'; if(r) ok++; }); fb(ok, D.fragen.length); });
+}
+if (LOES){ document.querySelectorAll('.pool,.leiste').forEach(x=>x.style.display='none');
+ const f=$('#fb'); if(f){ f.className='feedback gut'; f.textContent='✔ Lösung'; } }
+</script></body></html>
