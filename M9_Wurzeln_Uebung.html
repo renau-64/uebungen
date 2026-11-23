@@ -1,0 +1,302 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wurzeln vereinfachen – digitale Übung</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap"><style>
+*{box-sizing:border-box}
+:root{--blau:#2E75B6;--lila:#7030A0;--gruen:#1E8449;--orange:#D35400;--rot:#C00000;--rand:#222}
+body{margin:0;font-family:"Comic Sans MS","Comic Neue",cursive;background:#F4F7FB;color:#222;font-size:19px;line-height:1.45}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:24px;margin:4px 0 12px;padding:8px 16px;background:#F2F2F2;border:2px solid var(--rand);border-radius:14px;display:inline-block}
+.box{background:#fff;border:2px solid var(--rand);border-radius:14px;padding:12px 16px;margin:12px 0}
+.aufg{border-width:2.5px}
+.vec,.det,.fr{display:inline-flex;vertical-align:middle;margin:0 3px}
+.vec,.fr{flex-direction:column;text-align:center}
+.vec{border-left:2px solid #222;border-right:2px solid #222;border-radius:12px;padding:0 8px;line-height:1.25}
+.fr>span:first-child{border-bottom:2px solid #222;padding:0 3px}.fr{font-size:.85em;line-height:1.15}
+.det{display:inline-grid;grid-template-columns:auto auto;gap:0 14px;border-left:2px solid #222;border-right:2px solid #222;padding:0 8px;line-height:1.3;position:relative;text-align:center}
+.pf{display:inline-block;position:relative;padding-top:.32em;line-height:1}
+.pf::before{content:"";position:absolute;left:0;right:3px;top:.1em;border-top:2px solid currentColor}
+.pf::after{content:"";position:absolute;right:0;top:-.07em;width:.28em;height:.28em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg)}
+.formel{font-size:21px;margin:6px 0;line-height:2.1}
+.g{color:var(--gruen);font-weight:bold}.o{color:var(--orange);font-weight:bold}.b1{color:var(--blau);font-weight:bold}.b2{color:var(--lila);font-weight:bold}
+svg.sk{width:100%;height:auto;max-height:420px;background:#fff;border:2px solid var(--rand);border-radius:12px;display:block}
+.btn{font-family:inherit;font-size:18px;padding:9px 16px;border-radius:12px;border:2px solid #222;background:#fff;cursor:pointer;margin:4px 4px 4px 0;min-height:44px;color:#222}
+.btn.main{background:#222;color:#fff}.btn.sel{background:#EAF2FB;border-color:var(--blau);box-shadow:0 0 0 3px #9DC3E6}
+.btn:disabled{opacity:.55;cursor:default}
+.fisch{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.fisch path{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:zieh 1.4s forwards}
+.fisch path.p2{animation-delay:1.3s}.fisch path.p3{animation-delay:2.4s}
+@keyframes zieh{to{stroke-dashoffset:0}}
+.merke{border-color:var(--rot)}.merke h2,.fehler h2{margin:0 0 6px;font-size:20px}
+.fehler{background:#FFF8E1;border-color:#BF9000}
+ul{margin:4px 0;padding-left:24px}
+.wu{white-space:nowrap;margin:0 1px}.rad{border-top:2px solid currentColor;padding:0 3px 0 2px;margin-left:1px}
+
+.reiter{display:flex;flex-wrap:wrap;margin-bottom:6px;position:sticky;top:0;background:#F4F7FB;z-index:5;padding:4px 0}
+.aufgabe{display:grid;grid-template-columns:1fr;gap:14px}
+.skbox svg.sk{max-height:36vh;width:auto;max-width:100%;margin:0 auto}
+@media (min-width:860px){.aufgabe{grid-template-columns:minmax(320px,1fr) 1.35fr;align-items:start}
+ .skbox{position:sticky;top:64px}.skbox svg.sk{max-height:70vh;width:100%}}
+@media (max-width:859px){.skbox{position:sticky;top:44px;z-index:3;background:#F4F7FB;padding-bottom:4px}.skbox svg.sk{max-height:28vh}
+ h1{font-size:19px;padding:6px 12px}.reiter{flex-wrap:nowrap;overflow-x:auto}.reiter .btn{padding:6px 11px;min-height:38px;font-size:16px;flex:none}}
+.aufgabe.schritte1{grid-template-columns:1fr!important;max-width:760px}
+.schritt{background:#fff;border:2px solid #7F7F7F;border-radius:14px;padding:10px 14px;margin:10px 0}
+.schritt.fertig{border-color:#1E8449;background:#F3FBF5}.schritt.fertig .stitel::before{content:"✔ ";color:#1E8449}
+.stitel{font-weight:bold;color:#1F4E79;margin-bottom:4px}.schritt p{margin:4px 0}
+.teilfrage{font-weight:bold;margin:16px 0 4px;padding:6px 12px;border-left:5px solid #1F4E79;background:#fff}
+.inp{display:inline-block;min-width:2.6em;padding:0 6px;border:2px solid #2E75B6;border-radius:8px;background:#fff;text-align:center;cursor:pointer;line-height:1.45;margin:2px;color:#2E75B6;font-weight:bold}
+.inp.fok{box-shadow:0 0 0 3px #9DC3E6;background:#EAF2FB}.inp.bad{border-color:#C00000;background:#FBE4E4}
+.inp.ok{border-color:#1E8449;color:#1E8449;background:#fff;cursor:default}
+.inp.g{border-color:#1E8449}.inp.o{border-color:#D35400}
+.vec .inp{display:block}.det .inp{margin:3px 0}
+.fb{font-size:18px;margin:6px 0;padding:0}.fb.gut{color:#1E8449;font-weight:bold}.fb.fast{background:#FFF2CC;border:2px solid #F4B400;border-radius:10px;padding:6px 10px}
+.tipp{display:none;background:#FFF2CC;border:2px dashed #BF9000;border-radius:10px;padding:6px 10px;margin:6px 0;font-size:18px}.tipp.an{display:block}
+.klein{font-size:16px;color:#555}.ende{border-color:#1E8449;background:#E2F4E8;font-size:20px}
+.keypad{position:fixed;left:0;right:0;bottom:0;display:none;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px;background:#DDE3EA;border-top:2px solid #7F7F7F;z-index:10}
+.keypad.an{display:grid}.key{font-family:inherit;font-size:22px;min-height:48px;border-radius:10px;border:2px solid #7F7F7F;background:#fff;cursor:pointer}
+@media (min-width:860px){.keypad{left:auto;right:16px;bottom:16px;width:380px;border:2px solid #7F7F7F;border-radius:14px}}
+body{padding-bottom:140px}
+</style></head><body><div class="wrap" id="app"></div><script>
+const $=(s,e=document)=>e.querySelector(s);
+function el(t,c,h){const x=document.createElement(t);if(c)x.className=c;if(h!=null)x.innerHTML=h;return x;}
+const MI='−';
+function zs(n){n=Math.round(n*100)/100;return String(n).replace('.',',').replace('-',MI);}
+function zk(n){return n<0?'('+zs(n)+')':zs(n);}
+function fm(t){return String(t).replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+ if(k==='w')return '<span class="wu">√<span class="rad">'+a.trim()+'</span></span>';
+ if(k==='>')return '<span class="pf">'+p[0]+'</span>';
+ if(k==='v')return '<span class="vec"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
+ if(k==='f')return '<span class="fr"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
+ return '<span class="det"><span>'+p[0]+'</span><span>'+p[1]+'</span><span>'+p[2]+'</span><span>'+p[3]+'</span></span>';});}
+function sub(p,q){return [q[0]-p[0],q[1]-p[1]];}
+function det2(u,v){return u[0]*v[1]-v[0]*u[1];}
+const FARBE={b1:'#2E75B6',b2:'#7030A0',rot:'#C00000',gruen:'#1E8449',grau:'#7F7F7F'};
+/* Skizze: o={P:{A:[x,y]}, poly:'ABC', dia:'KM', fill:'ABC', pfeile:[['A','B','b1']], bogen:{bei,von,nach,farbe}} */
+function skizze(o){
+ const P=o.P, xs=Object.values(P).map(p=>p[0]), ys=Object.values(P).map(p=>p[1]);
+ const x0=Math.min(0,...xs)-1,x1=Math.max(0,...xs)+1,y0=Math.min(0,...ys)-1,y1=Math.max(0,...ys)+1,u=34;
+ const W=(x1-x0)*u,H=(y1-y0)*u,X=x=>(x-x0)*u,Y=y=>(y1-y)*u;let s='';
+ s+='<defs>'+Object.entries(FARBE).map(([k,c])=>'<marker id="m'+k+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="'+c+'"/></marker>').join('')+'</defs>';
+ for(let x=x0;x<=x1;x++)s+='<line x1="'+X(x)+'" y1="0" x2="'+X(x)+'" y2="'+H+'" stroke="#DDE3EA"/>';
+ for(let y=y0;y<=y1;y++)s+='<line x1="0" y1="'+Y(y)+'" x2="'+W+'" y2="'+Y(y)+'" stroke="#DDE3EA"/>';
+ s+='<line x1="0" y1="'+Y(0)+'" x2="'+(W-2)+'" y2="'+Y(0)+'" stroke="#444" stroke-width="1.6" marker-end="url(#mgrau)"/>';
+ s+='<line x1="'+X(0)+'" y1="'+H+'" x2="'+X(0)+'" y2="2" stroke="#444" stroke-width="1.6" marker-end="url(#mgrau)"/>';
+ for(let x=x0+1;x<x1;x++)if(x)s+='<text x="'+X(x)+'" y="'+(Y(0)+15)+'" font-size="11" text-anchor="middle" fill="#666">'+zs(x)+'</text>';
+ for(let y=y0+1;y<y1;y++)if(y)s+='<text x="'+(X(0)-5)+'" y="'+(Y(y)+4)+'" font-size="11" text-anchor="end" fill="#666">'+zs(y)+'</text>';
+ const pts=n=>n.split('').map(k=>X(P[k][0])+','+Y(P[k][1])).join(' ');
+ if(o.poly)s+='<polygon points="'+pts(o.poly)+'" fill="#EAF2FB" stroke="#1F4E79" stroke-width="2"/>';
+ if(o.fill)s+='<polygon points="'+pts(o.fill)+'" fill="#FFE699" fill-opacity=".75" stroke="#BF9000" stroke-width="2"/>';
+ if(o.dia){const a=P[o.dia[0]],b=P[o.dia[1]];s+='<line x1="'+X(a[0])+'" y1="'+Y(a[1])+'" x2="'+X(b[0])+'" y2="'+Y(b[1])+'" stroke="#1F4E79" stroke-width="2" stroke-dasharray="6 4"/>';}
+ (o.pfeile||[]).forEach(([a,b,f])=>{const p=P[a],q=P[b];s+='<line x1="'+X(p[0])+'" y1="'+Y(p[1])+'" x2="'+X(q[0])+'" y2="'+Y(q[1])+'" stroke="'+FARBE[f]+'" stroke-width="4" marker-end="url(#m'+f+')"/>';});
+ if(o.bogen){const B=o.bogen,p=P[B.bei],v1=sub(p,P[B.von]),v2=sub(p,P[B.nach]),r=1.25;
+  const a1=Math.atan2(v1[1],v1[0]);let a2=Math.atan2(v2[1],v2[0]);const ccw=det2(v1,v2)>0;
+  const sx=X(p[0]+r*Math.cos(a1)),sy=Y(p[1]+r*Math.sin(a1)),ex=X(p[0]+r*Math.cos(a2)),ey=Y(p[1]+r*Math.sin(a2));
+  const c=FARBE[B.farbe||(ccw?'gruen':'rot')];
+  s+='<path d="M'+sx+','+sy+' A'+(r*u)+','+(r*u)+' 0 0 '+(ccw?0:1)+' '+ex+','+ey+'" fill="none" stroke="'+c+'" stroke-width="3.5" marker-end="url(#m'+(B.farbe||(ccw?'gruen':'rot'))+')"/>';}
+ const cx=xs.reduce((a,b)=>a+b,0)/xs.length,cy=ys.reduce((a,b)=>a+b,0)/ys.length;
+ Object.entries(P).forEach(([n,p])=>{let dx=p[0]-cx,dy=p[1]-cy;const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;
+  s+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="4.5" fill="#222"/><text x="'+(X(p[0])+dx*16)+'" y="'+(Y(p[1])-dy*16+6)+'" font-size="17" font-weight="bold" text-anchor="middle" font-family="Comic Sans MS,Comic Neue,cursive">'+n+'</text>';});
+ return '<svg class="sk" viewBox="-4 -4 '+(W+8)+' '+(H+8)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
+/* Fisch über einer Determinante: |a b; c d|, Weg a→d, dann c→b und d–b (wie im Merkkasten 2.6) */
+function fischHTML(a,b,c,d,mitFisch){
+ const f=mitFisch?'<svg class="fisch" viewBox="0 0 100 100" preserveAspectRatio="none"><path class="p1" d="M31,22 L69,78" stroke="#1E8449"/><path class="p2" d="M31,78 L69,22" stroke="#D35400"/><path class="p3" d="M69,22 L69,78" stroke="#D35400"/></svg>':'';
+ return '<span class="det" style="font-size:1.45em;padding:4px 14px;gap:6px 58px"><span class="g">'+a+'</span><span class="o">'+b+'</span><span class="o">'+c+'</span><span class="g">'+d+'</span>'+f+'</span>';}
+</script><script>const DATA={"titel": "Wurzeln vereinfachen", "training": false, "aufgaben": [{"titel": "a", "typ": "schritte", "hilfen": "wenig", "text": "Fasse zusammen: 3{w 5} + 2{w 5} − {w 5}", "schritte": [{"titel": "Gleiche Wurzeln zusammenfassen", "auftrag": "Alle Wurzeln sind gleich. Fasse die Zahlen vor {w 5} zusammen.", "zeile": "(3 + 2 − ⟦1⟧) · {w 5} = ⟦4⟧{w 5}", "hinweis": "Vor − {w 5} steht unsichtbar eine 1: − {w 5} = − 1 · {w 5}.", "tipp": "Wie bei 3x + 2x − x = 4x."}]}, {"titel": "b", "typ": "schritte", "hilfen": "wenig", "text": "Radiziere teilweise: {w 50}", "schritte": [{"titel": "Quadratzahl finden", "auftrag": "Zerlege 50 in eine Quadratzahl mal eine Zahl.", "zeile": "{w 50} = {w ⟦25⟧ · ⟦2⟧}", "tausch": [[0, 1]], "hinweis": "Suche die größte Quadratzahl, durch die 50 teilbar ist.", "tipp": "Teste der Reihe nach 4, 9, 16, 25."}, {"titel": "Wurzel ziehen", "auftrag": "Ziehe die Wurzel aus der Quadratzahl. Der Rest bleibt unter der Wurzel.", "zeile": "{w 25 · 2} = {w 25} · {w 2} = ⟦5⟧{w ⟦2⟧}", "hinweis": "{w 25} = 5. Die 2 bleibt unter der Wurzel.", "tipp": "Produktregel: {w a · b} = {w a} · {w b}"}]}, {"titel": "c", "typ": "schritte", "hilfen": "wenig", "text": "Vereinfache so weit wie möglich: {w 12} + {w 27}", "schritte": [{"titel": "Teilweise radizieren", "auftrag": "Zerlege beide Radikanden und ziehe teilweise die Wurzel.", "zeile": "{w 4 · 3} + {w ⟦9⟧ · 3} = ⟦2⟧{w 3} + ⟦3⟧{w 3}", "hinweis": "27 = 9 · 3. Dann gilt {w 4} = 2 und {w 9} = 3.", "tipp": "Teste bei 27 der Reihe nach 4, 9, 16."}, {"titel": "Gleiche Wurzeln zusammenfassen", "auftrag": "Jetzt sind beide Wurzeln gleich. Fasse zusammen.", "zeile": "2{w 3} + 3{w 3} = ⟦5⟧{w 3}", "hinweis": "2 + 3 = 5, die {w 3} bleibt.", "tipp": "Wie bei 2x + 3x = 5x."}]}]};</script><script>
+const D=DATA;const LOES=new URLSearchParams(location.search).get('loesung')==='1';
+const app=$('#app');app.append(el('h1','',D.titel));
+/* ---------- Tastenfeld (Tablet: kein Systemtastatur-Wechsel für das Minuszeichen) */
+let aktiv=null;const kp=el('div','keypad');
+['1','2','3','4','5','6','7','8','9',MI,'0',',','⌫','➜'].forEach(k=>{const b=el('button','key',k);b.onclick=(e)=>{e.preventDefault();taste(k);};kp.append(b);});
+document.body.append(kp);
+function fokus(f){if(aktiv)aktiv.classList.remove('fok');aktiv=f;if(f){f.classList.add('fok');kp.classList.add('an');}else kp.classList.remove('an');}
+function taste(k){if(!aktiv)return;let t=aktiv.dataset.v||'';
+ if(k==='⌫')t=t.slice(0,-1);else if(k==='➜'){naechstes();return;}
+ else if(k===MI){t=t.startsWith(MI)?t.slice(1):MI+t;}else if(k===','){if(!t.includes(','))t+=(t===''||t===MI?'0':'')+',';}
+ else if(t.length<7)t+=k;
+ aktiv.dataset.v=t;zeigeWert(aktiv);aktiv.classList.remove('bad');}
+function zeigeWert(f){const t=f.dataset.v||'';f.textContent=(t.startsWith(MI)&&f.classList.contains('kl'))?'('+t+')':(t||' ');}
+function naechstes(){const alle=[...document.querySelectorAll('.inp:not(.fest)')].filter(x=>x.offsetParent);const i=alle.indexOf(aktiv);
+ if(i>=0&&i<alle.length-1)fokus(alle[i+1]);else{const b=aktiv&&aktiv.closest('.schritt')&&aktiv.closest('.schritt').querySelector('.pruefen');fokus(null);if(b)b.click();}}
+document.addEventListener('keydown',e=>{if(!aktiv)return;const k=e.key;
+ if(/^[0-9]$/.test(k))taste(k);else if(k==='-'||k==='−')taste(MI);else if(k===','||k==='.')taste(',');
+ else if(k==='Backspace')taste('⌫');else if(k==='Enter'||k==='Tab')taste('➜');else return;e.preventDefault();});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.inp,.keypad'))fokus(null);});
+function inp(w,cls){const f=el('span','inp'+(cls?' '+cls:''),' ');f.dataset.soll=w;f.onclick=()=>{if(!f.classList.contains('fest'))fokus(f);};return f;}
+function wert(f){const t=(f.dataset.v||'').replace(MI,'-').replace(',','.');return /^-?\d+(\.\d+)?$/.test(t)?parseFloat(t):NaN;}
+function setze(f,w){f.dataset.v=zs(w);zeigeWert(f);}
+function fest(f){f.classList.add('fest','ok');f.classList.remove('bad','fok');}
+
+/* ---------- Aufgaben vorbereiten */
+function teileVorbereiten(A){
+ const P=A.P;let dreiecke=[];
+ A.teile.forEach(t=>{
+  if(t.art==='dreieck'||t.art==='parallelogramm'){
+   const e=t.ecken,S=e[0];const nb=t.art==='dreieck'?[e[1],e[2]]:[e[1],e[3]];
+   const v=nb.map(n=>sub(P[S],P[n]));const ccw=det2(v[0],v[1])>0;
+   t.S=S;t.nb=nb;t.v=v;t.reihe=ccw?[0,1]:[1,0];
+   const u1=v[t.reihe[0]],u2=v[t.reihe[1]];t.m=[u1[0],u2[0],u1[1],u2[1]];
+   t.halb=t.art==='dreieck';t.D=det2(u1,u2);t.A=t.halb?t.D/2:t.D;dreiecke.push(t);
+   if(!t.name)t.name='A';
+  }else if(t.art==='summe'){t.von=dreiecke.slice();t.A=dreiecke.reduce((s,x)=>s+x.A,0);}
+  else if(t.art==='produkt'){t.A=A.teile.find(x=>x.art==='summe').A*t.faktor;}});}
+
+/* ---------- Ein Schritt = Karte mit Auftrag, Eingabe, Prüfen */
+function karte(R,titel,inhalt,pruef,loese,tipp){
+ const k=el('div','schritt');k.append(el('div','stitel',titel));k.append(inhalt);
+ const fb=el('div','fb');const leiste=el('div','leiste');
+ let versuche=0;
+ const fertig=(ersterVersuch)=>{k.classList.add('fertig');leiste.remove();R.schritte++;if(ersterVersuch)R.gut++;R.weiter();};
+ if(pruef){const b=el('button','btn main pruefen','Prüfen');leiste.append(b);
+  b.onclick=()=>{const r=pruef();if(r===true){fb.className='fb gut';fb.innerHTML='✔ Richtig!';fertig(versuche===0);}
+   else{versuche++;fb.className='fb fast';fb.innerHTML=r;if(versuche>=2&&!leiste.querySelector('.zeig')){const z=el('button','btn zeig','Lösung zeigen');
+    z.onclick=()=>{loese();fb.className='fb fast';fb.innerHTML='So geht es. Schau dir den Schritt genau an.';fertig(false);};leiste.append(z);}}};}
+ k.append(fb,leiste);
+ if(tipp){const t=el('button','btn','💡 Tipp');const tx=el('div','tipp',fm(tipp));
+  if(R.hilfen==='voll')tx.classList.add('an');else t.onclick=()=>tx.classList.toggle('an');
+  if(R.hilfen!=='voll')leiste.append(t);k.insertBefore(tx,fb);}
+ k._loese=()=>{loese();fertig(false);};k._auswahl=null;return k;}
+
+function vekZeile(name,soll,cache){
+ const z=el('div','formel');const fx=inp(soll[0]),fy=inp(soll[1]);
+ const v=el('span','vec');v.append(fx,fy);z.innerHTML=fm('{>'+name+'} = ');z.append(v);
+ if(cache[name]){setze(fx,soll[0]);setze(fy,soll[1]);fest(fx);fest(fy);z.append(el('span','klein',' (schon berechnet)'));}
+ return {z,fx,fy};}
+
+function rundeTeil(A,t,R,box,cache){
+ const P=A.P,S=t.S,nb=t.nb,N=[S+nb[0],S+nb[1]];const E=A.einheit||'FE';
+ const sk=R.sk;sk.fill=t.art==='dreieck'?t.ecken:null;sk.pfeile=[];sk.bogen=null;R.zeichne();
+ const schritte=[];
+ if(t.art==='parallelogramm'){schritte.push(()=>{
+  const opt=[t.ecken[1],t.ecken[2],t.ecken[3]];const gew=new Set();const c=el('div','');
+  c.append(el('p','',fm('Wähle die zwei Seiten, die sich in '+S+' treffen.')));
+  const bs=opt.map(n=>{const b=el('button','btn',fm('{>'+S+n+'}'));b.onclick=()=>{if(gew.has(n)){gew.delete(n);b.classList.remove('sel');}else if(gew.size<2){gew.add(n);b.classList.add('sel');}};c.append(b);return b;});
+  const fertigBs=()=>bs.forEach(b=>b.disabled=true);
+  return karte(R,'Seiten wählen',c,()=>{if(gew.size<2)return 'Wähle zwei Vektoren.';
+   if(gew.has(t.ecken[2]))return fm('{>'+S+t.ecken[2]+'} ist die Diagonale, keine Seite. Nimm die zwei Seiten an der Ecke '+S+'.');fertigBs();return true;},
+   ()=>{bs.forEach((b,i)=>{b.classList.toggle('sel',opt[i]!==t.ecken[2]);});fertigBs();},
+   'Ein Parallelogramm besteht aus zwei gleichen Dreiecken. Nimm die zwei Seiten, die sich in einer Ecke treffen.');});}
+ schritte.push(()=>{const c=el('div','');c.append(el('p','','Bilde die Vektoren von '+S+' aus.'));
+  const zs_=N.map((n,i)=>{const r=vekZeile(n,t.v[i],cache);c.append(r.z);return r;});
+  const tipp='Spitze minus Fuß: '+N.map((n,i)=>'{>'+n+'} = {v '+zs(P[nb[i]][0])+' − '+zk(P[S][0])+'|'+zs(P[nb[i]][1])+' − '+zk(P[S][1])+'}').join(' &nbsp; ')+'<br>Negative Zahlen in Klammern!';
+  const fertigV=()=>{zs_.forEach((r,i)=>{fest(r.fx);fest(r.fy);cache[N[i]]=1;});sk.pfeile=N.map((n,i)=>[S,nb[i],i?'b2':'b1']);R.zeichne();};
+  return karte(R,'Vektoren bilden',c,()=>{let msg='';zs_.forEach((r,i)=>[r.fx,r.fy].forEach((f,j)=>{const w=wert(f),s=t.v[i][j];
+    if(w===s)return;f.classList.add('bad');if(isNaN(w))msg=msg||'Trage alle Zahlen ein.';
+    else if(w===-s)msg=msg||'Achte auf die Reihenfolge: Spitze minus Fuß.';
+    else{const q=P[nb[i]][j],p=P[S][j];msg=msg||(w===q+p&&p<0?'Minus und Minus: Setze die negative Zahl in Klammern, dann wird daraus plus.':'Rechne noch einmal: Spitze minus Fuß.');}}));
+   if(msg)return msg;fertigV();return true;},()=>{zs_.forEach((r,i)=>{setze(r.fx,t.v[i][0]);setze(r.fy,t.v[i][1]);});fertigV();},tipp);});
+ schritte.push(()=>{const c=el('div','');c.append(el('p','','Der erste Vektor dreht sich gegen den Uhrzeigersinn zum zweiten. Welcher Vektor kommt zuerst?'));
+  const opts=[[0,1],[1,0]].map(o=>{const b=el('button','btn',fm('erst {>'+N[o[0]]+'}, dann {>'+N[o[1]]+'}'));b.dataset.o=o.join('');c.append(b);return b;});
+  let wahl=null;opts.forEach((b,i)=>b.onclick=()=>{opts.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');wahl=i?[1,0]:[0,1];
+   sk.bogen={bei:S,von:nb[wahl[0]],nach:nb[wahl[1]]};R.zeichne();});
+  const fertigR=()=>{const r=t.reihe;sk.bogen={bei:S,von:nb[r[0]],nach:nb[r[1]]};R.zeichne();opts.forEach(b=>{b.disabled=true;b.classList.toggle('sel',b.dataset.o===r.join(''));});};
+  return karte(R,'Reihenfolge: gegen den Uhrzeigersinn',c,()=>{if(!wahl)return 'Tippe eine Reihenfolge an.';
+   if(wahl[0]!==t.reihe[0])return fm('Von {>'+N[wahl[0]]+'} zu {>'+N[wahl[1]]+'} dreht man <b style="color:#C00000">im</b> Uhrzeigersinn (roter Bogen in der Skizze). Tausche die Reihenfolge.');
+   fertigR();return true;},fertigR,'Schau in die Skizze: Der Bogen vom ersten zum zweiten Vektor muss gegen den Uhrzeigersinn laufen (grün).');});
+ schritte.push(()=>{const c=el('div','');c.append(el('p','','Dreieck oder Parallelogramm? Wähle die passende Formel.'));
+  const opt=[['A = {f 1|2} · Determinante',true],['A = Determinante',false]];let wahl=null;
+  const bs=opt.map(([txt,h],i)=>{const b=el('button','btn',fm(txt));b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');wahl=h;};c.append(b);return b;});
+  const fertigF=()=>{bs.forEach((b,i)=>{b.disabled=true;b.classList.toggle('sel',opt[i][1]===t.halb);});};
+  return karte(R,'Dreieck oder Parallelogramm?',c,()=>{if(wahl===null)return 'Tippe eine Formel an.';
+   if(wahl!==t.halb)return t.halb?'Ein Dreieck ist nur die Hälfte des Parallelogramms: mal {f 1|2}.'.replace(/\{f 1\|2\}/,fm('{f 1|2}')):'Ein Parallelogramm besteht aus zwei Dreiecken. Die Determinante ist schon die ganze Fläche: ohne '+fm('{f 1|2}')+'.';
+   fertigF();return true;},fertigF,'Die Determinante gibt die Fläche des Parallelogramms. Ein Dreieck ist die Hälfte.');});
+ schritte.push(()=>{const c=el('div','');const r=t.reihe;
+  c.append(el('p','',fm('Setze die Vektoren als Spalten ein: erst {>'+N[r[0]]+'}, dann {>'+N[r[1]]+'}.')));
+  const fs=t.m.map(w=>inp(w));const d=el('span','det');fs.forEach(f=>d.append(f));
+  const z=el('div','formel',fm(t.name+' = '+(t.halb?'{f 1|2} · ':'')));z.append(d);z.append(document.createTextNode(' '+E));c.append(z);
+  const fertigD=()=>fs.forEach(f=>fest(f));
+  return karte(R,'In die Determinante einsetzen',c,()=>{let msg='';fs.forEach((f,i)=>{if(wert(f)!==t.m[i]){f.classList.add('bad');msg='Die Vektoren stehen senkrecht als Spalten: links der erste, rechts der zweite.';}});
+   const w=fs.map(wert);if(msg&&w[0]===t.m[1]&&w[1]===t.m[0])msg='Falsche Reihenfolge: Links steht der erste Vektor ({>'+N[r[0]]+'}).'.replace(/\{>(\w+)\}/,(m,x)=>fm('{>'+x+'}'));
+   if(msg&&w[0]===t.m[0]&&w[1]===t.m[2])msg='Die Vektoren stehen senkrecht (als Spalten), nicht waagrecht.';
+   if(msg)return msg;fertigD();return true;},()=>{fs.forEach((f,i)=>setze(f,t.m[i]));fertigD();},
+   'Erster Vektor {v '+zs(t.m[0])+'|'+zs(t.m[2])+'} in die linke Spalte, zweiter Vektor {v '+zs(t.m[1])+'|'+zs(t.m[3])+'} in die rechte Spalte.');});
+ schritte.push(()=>{const c=el('div','');const [a,b,cc,dd]=t.m;
+  const fz=el('div','formel');fz.innerHTML=fm(t.name+' = '+(t.halb?'{f 1|2} · ':''))+fischHTML(zs(a),zs(b),zs(cc),zs(dd),R.hilfen==='voll')+' '+E;c.append(fz);
+  const f=[inp(a,'g kl'),inp(dd,'g kl'),inp(b,'o kl'),inp(cc,'o kl')],fa=inp(t.A);
+  const z=el('div','formel');z.innerHTML=fm('= '+(t.halb?'{f 1|2} · ':''))+'(';z.append(f[0],' · ',f[1],' − ',f[2],' · ',f[3],')',' '+E+' = ',fa,' '+E);c.append(z);
+  const fertigF=()=>{[...f,fa].forEach(x=>fest(x));};
+  return karte(R,'Fisch-Regel: über Kreuz rechnen',c,()=>{const w=f.map(wert),s=(x,y,p,q)=>(x===p&&y===q)||(x===q&&y===p);let msg='';
+   if(w.some(isNaN)||isNaN(wert(fa)))return 'Trage alle Zahlen ein.';
+   if(!s(w[0],w[1],a,dd)||!s(w[2],w[3],b,cc)){[0,1,2,3].forEach(i=>f[i].classList.add('bad'));
+    if(s(w[0],w[1],b,cc)&&s(w[2],w[3],a,dd))return 'Erst a · d (von links oben nach rechts unten), dann minus b · c.';
+    return 'Fisch-Regel: links oben mal rechts unten, minus rechts oben mal links unten.';}
+   const A=wert(fa);if(A!==t.A){fa.classList.add('bad');
+    if(t.halb&&A===t.D)return 'Fast! Beim Dreieck noch mal '+fm('{f 1|2}')+'.';
+    if(!t.halb&&A===t.D/2)return 'Beim Parallelogramm ohne '+fm('{f 1|2}')+'.';
+    if(A===-t.A)return 'Das Vorzeichen stimmt nicht. Achtung bei Minus mal Minus.';
+    return 'Rechne noch einmal: erst die Produkte, dann die Differenz'+(t.halb?', dann mal '+fm('{f 1|2}'):'')+'.';}
+   fertigF();return true;},()=>{setze(f[0],a);setze(f[1],dd);setze(f[2],b);setze(f[3],cc);setze(fa,t.A);fertigF();},
+   'Fisch-Regel: a · d − b · c. Weg a → d, dann b · c abziehen. Negative Zahlen in Klammern!');});
+ return schritte;}
+
+function rundeSumme(A,t,R){const E=A.einheit||'FE';return [()=>{const c=el('div','');
+  const fa=inp(t.A);const z=el('div','formel',fm('A = '+t.von.map(x=>x.name).join(' + ')+' = '+t.von.map(x=>zs(x.A)+' '+E).join(' + ')+' = '));z.append(fa,' '+E);c.append(z);
+  return karte(R,'Flächen addieren',c,()=>{if(wert(fa)!==t.A){fa.classList.add('bad');return 'Addiere die Flächen der beiden Dreiecke.';}fest(fa);return true;},()=>{setze(fa,t.A);fest(fa);},'Das Viereck besteht aus den beiden Dreiecken: A = A₁ + A₂.');}];}
+function rundeProdukt(A,t,R){return [()=>{const c=el('div','');const s=A.teile.find(x=>x.art==='summe').A;
+  const fa=inp(t.A);const z=el('div','formel',zs(s)+' · '+zs(t.faktor)+' '+t.einheit+' = ');z.append(fa,' '+t.einheit);c.append(z);const satz=el('p','klein','');c.append(satz);
+  const ok=()=>{fest(fa);if(t.satz)satz.innerHTML='Antwort: '+t.satz.replace('{x}',zs(t.A));};
+  return karte(R,'Weiterrechnen',c,()=>{if(wert(fa)!==t.A){fa.classList.add('bad');return 'Pro m² braucht man '+zs(t.faktor)+' '+t.einheit+'. Rechne Fläche mal '+zs(t.faktor)+'.';}ok();return true;},()=>{setze(fa,t.A);ok();},'Fläche mal Menge pro m².');}];}
+
+/* ---------- Aufgabe vom Typ "schritte" (NEU 23.11.2026): Zeile mit Eingabefeldern ⟦Lösung⟧ je Schritt */
+function aufgabeSchritte(A){
+ const box=el('div','aufgabe schritte1');const rechts=el('div','ablauf');box.append(rechts);
+ const R={hilfen:A.hilfen||'wenig',schritte:0,gut:0};
+ rechts.append(el('div','box aufg',fm(A.text)));let si=0;
+ const karten=A.schritte.map(S=>()=>{const c=el('div','');if(S.auftrag)c.append(el('p','',fm(S.auftrag)));
+  const z=el('div','formel');z.innerHTML=fm(S.zeile).replace(/⟦([^⟧]*)⟧/g,(m,w)=>'<span class="inp" data-soll="'+w+'"> </span>');c.append(z);
+  const fs=[...z.querySelectorAll('.inp')];fs.forEach(f=>f.onclick=()=>{if(!f.classList.contains('fest'))fokus(f);});
+  const soll=fs.map(f=>parseFloat(f.dataset.soll.replace(MI,'-').replace(',','.')));
+  const fertigS=()=>fs.forEach(f=>fest(f));
+  return karte(R,S.titel,c,()=>{const w=fs.map(wert);if(w.some(isNaN))return 'Trage alle Zahlen ein.';
+    let ok=w.every((x,i)=>x===soll[i]);
+    (S.tausch||[]).forEach(([i,j])=>{if(!ok&&w[i]===soll[j]&&w[j]===soll[i]&&w.every((x,k)=>k===i||k===j||x===soll[k]))ok=true;});
+    if(ok){fertigS();return true;}
+    w.forEach((x,i)=>{if(x!==soll[i])fs[i].classList.add('bad');});return fm(S.hinweis||'Rechne noch einmal.');},
+   ()=>{fs.forEach((f,i)=>setze(f,soll[i]));fertigS();},S.tipp);});
+ R.weiter=()=>{if(si<karten.length){const k=karten[si++]();rechts.append(k);if(!LOES)setTimeout(()=>k.scrollIntoView({behavior:'smooth',block:'nearest'}),60);if(LOES)k._loese();return;}
+  if(LOES)return;
+  const s=el('div','box ende','🎉 Geschafft! '+R.gut+' von '+R.schritte+' Schritten beim ersten Versuch richtig.');rechts.append(s);if(A.onFertig)A.onFertig(s);};
+ setTimeout(()=>R.weiter(),0);return box;}
+
+/* ---------- Aufgabe aufbauen */
+function aufgabe(A){
+ if(A.typ==='schritte')return aufgabeSchritte(A);
+ teileVorbereiten(A);
+ const box=el('div','aufgabe');const links=el('div','skbox'),rechts=el('div','ablauf');box.append(links,rechts);
+ const R={hilfen:A.hilfen||'wenig',schritte:0,gut:0,sk:{P:A.P,poly:A.poly||Object.keys(A.P).join(''),dia:A.diagonale},
+  zeichne(){links.innerHTML=skizze(R.sk);}};
+ rechts.append(el('div','box aufg',fm(A.text)));
+ const cache={};let ti=0,si=0,akt=[];
+ function teilStart(){const t=A.teile[ti];if(t.frage)rechts.append(el('div','teilfrage',fm(t.frage)));
+  akt=t.art==='summe'?rundeSumme(A,t,R):t.art==='produkt'?rundeProdukt(A,t,R):rundeTeil(A,t,R,box,cache);si=0;}
+ R.weiter=()=>{if(si<akt.length){const k=akt[si++]();rechts.append(k);if(!LOES)setTimeout(()=>k.scrollIntoView({behavior:'smooth',block:'nearest'}),60);if(LOES)k._loese();return;}
+  ti++;if(ti<A.teile.length){teilStart();R.weiter();return;}
+  if(LOES)return;
+  const s=el('div','box ende','🎉 Geschafft! '+R.gut+' von '+R.schritte+' Schritten beim ersten Versuch richtig.');rechts.append(s);if(A.onFertig)A.onFertig(s);};
+ R.zeichne();teilStart();R.weiter();return box;}
+
+/* ---------- Training: Zufallsaufgaben */
+function zufall(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function namenText(P){return Object.entries(P).map(([n,p])=>n+' ('+zs(p[0])+' | '+zs(p[1])+')').join(', ');}
+function neueTraining(){
+ for(;;){const para=Math.random()<.4;const ok=v=>v.every(p=>p[0]>=-5&&p[0]<=8&&p[1]>=-4&&p[1]<=7);
+  const S=[zufall(-3,3),zufall(-3,2)],u=[zufall(-2,6),zufall(-3,4)],v=[zufall(-3,5),zufall(-2,6)];const D=det2(u,v);
+  if(Math.abs(D)<5||Math.abs(D)>40)continue;
+  if(para){const [a,b]=D>0?[u,v]:[v,u];const pts=[S,[S[0]+a[0],S[1]+a[1]],[S[0]+a[0]+b[0],S[1]+a[1]+b[1]],[S[0]+b[0],S[1]+b[1]]];if(!ok(pts))continue;
+   const L=['ABCD','EFGH','KLMN','PQRS','RSTU'][zufall(0,4)];const P={};L.split('').forEach((n,i)=>P[n]=pts[i]);
+   return {titel:'Training',text:'Berechne den Flächeninhalt des Parallelogramms '+L+' mit '+namenText(P)+'.',P,poly:L,hilfen:'wenig',teile:[{art:'parallelogramm',ecken:L}]};}
+  const pts=[S,[S[0]+u[0],S[1]+u[1]],[S[0]+v[0],S[1]+v[1]]];if(!ok(pts))continue;
+  const L=['ABC','DEF','KLM','PQR','RST','UVW','XYZ'][zufall(0,6)];const P={};L.split('').forEach((n,i)=>P[n]=pts[i]);
+  return {titel:'Training',text:'Berechne den Flächeninhalt des Dreiecks '+L+' mit '+namenText(P)+'.',P,poly:L,hilfen:'wenig',teile:[{art:'dreieck',ecken:L}]};}}
+
+/* ---------- Reiter */
+const reiter=el('div','reiter');const bereich=el('div','');app.append(reiter,bereich);
+const seiten=[];
+function zeige(i){seiten.forEach((s,j)=>{s.div.style.display=i===j?'':'none';s.btn.classList.toggle('sel',i===j);});fokus(null);window.scrollTo({top:0});}
+D.aufgaben.forEach((A,i)=>{const b=el('button','btn',A.titel);b.onclick=()=>zeige(i);reiter.append(b);
+ const div=el('div','');bereich.append(div);seiten.push({btn:b,div});
+ if(LOES)div.append(el('h2','',A.titel));div.append(aufgabe(A));
+ A.onFertig=(s)=>{if(i<D.aufgaben.length-1){const n=el('button','btn main','Nächste Aufgabe ➜');n.onclick=()=>zeige(i+1);s.append(el('br'),n);}
+  else if(D.training){const n=el('button','btn main','Zum Training ➜');n.onclick=()=>zeige(seiten.length-1);s.append(el('br'),n);}};});
+if(D.training&&!LOES){const b=el('button','btn','🏋 Training');reiter.append(b);const div=el('div','');bereich.append(div);seiten.push({btn:b,div});
+ const neu=()=>{div.innerHTML='';const T=neueTraining();T.onFertig=(s)=>{const n=el('button','btn main','Neue Aufgabe ➜');n.onclick=neu;s.append(el('br'),n);};
+  div.append(el('p','klein','Zufallsaufgaben zum Weiterüben – so oft du willst.'),aufgabe(T));};
+ b.addEventListener('click',()=>{if(!div.firstChild)neu();});}
+if(LOES){reiter.remove();seiten.forEach(s=>s.div.style.display='');}else zeige(0);
+</script></body></html>
