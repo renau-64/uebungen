@@ -27,6 +27,7 @@ svg.sk{width:100%;height:auto;max-height:420px;background:#fff;border:2px solid 
 .merke{border-color:var(--rot)}.merke h2,.fehler h2{margin:0 0 6px;font-size:20px}
 .fehler{background:#FFF8E1;border-color:#BF9000}
 ul{margin:4px 0;padding-left:24px}
+.wu{white-space:nowrap;margin:0 1px}.rad{border-top:2px solid currentColor;padding:0 3px 0 2px;margin-left:1px}
 
 .karte h2{font-size:20px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
 .nr{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#1F4E79;color:#fff;flex:none}
@@ -39,7 +40,8 @@ function el(t,c,h){const x=document.createElement(t);if(c)x.className=c;if(h!=nu
 const MI='−';
 function zs(n){n=Math.round(n*100)/100;return String(n).replace('.',',').replace('-',MI);}
 function zk(n){return n<0?'('+zs(n)+')':zs(n);}
-function fm(t){return String(t).replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+function fm(t){return String(t).replace(/([A-Za-z])_([A-Za-z0-9])/g,'$1<sub>$2</sub>').replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+ if(k==='w')return '<span class="wu">√<span class="rad">'+a.trim()+'</span></span>';
  if(k==='>')return '<span class="pf">'+p[0]+'</span>';
  if(k==='v')return '<span class="vec"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
  if(k==='f')return '<span class="fr"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';

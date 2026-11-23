@@ -27,6 +27,7 @@ svg.sk{width:100%;height:auto;max-height:420px;background:#fff;border:2px solid 
 .merke{border-color:var(--rot)}.merke h2,.fehler h2{margin:0 0 6px;font-size:20px}
 .fehler{background:#FFF8E1;border-color:#BF9000}
 ul{margin:4px 0;padding-left:24px}
+.wu{white-space:nowrap;margin:0 1px}.rad{border-top:2px solid currentColor;padding:0 3px 0 2px;margin-left:1px}
 
 .reiter{display:flex;flex-wrap:wrap;margin-bottom:6px;position:sticky;top:0;background:#F4F7FB;z-index:5;padding:4px 0}
 .aufgabe{display:grid;grid-template-columns:1fr;gap:14px}
@@ -35,11 +36,12 @@ ul{margin:4px 0;padding-left:24px}
  .skbox{position:sticky;top:64px}.skbox svg.sk{max-height:70vh;width:100%}}
 @media (max-width:859px){.skbox{position:sticky;top:44px;z-index:3;background:#F4F7FB;padding-bottom:4px}.skbox svg.sk{max-height:28vh}
  h1{font-size:19px;padding:6px 12px}.reiter{flex-wrap:nowrap;overflow-x:auto}.reiter .btn{padding:6px 11px;min-height:38px;font-size:16px;flex:none}}
+.aufgabe.schritte1{grid-template-columns:1fr!important;max-width:760px}
 .schritt{background:#fff;border:2px solid #7F7F7F;border-radius:14px;padding:10px 14px;margin:10px 0}
 .schritt.fertig{border-color:#1E8449;background:#F3FBF5}.schritt.fertig .stitel::before{content:"✔ ";color:#1E8449}
 .stitel{font-weight:bold;color:#1F4E79;margin-bottom:4px}.schritt p{margin:4px 0}
 .teilfrage{font-weight:bold;margin:16px 0 4px;padding:6px 12px;border-left:5px solid #1F4E79;background:#fff}
-.inp{display:inline-block;min-width:2.6em;padding:0 6px;border:2px solid #2E75B6;border-radius:8px;background:#fff;text-align:center;cursor:pointer;line-height:1.45;margin:2px;color:#2E75B6;font-weight:bold}
+.inp{display:inline-block;min-width:2.6em;min-height:1.45em;vertical-align:middle;box-sizing:content-box;padding:0 6px;border:2px solid #2E75B6;border-radius:8px;background:#EEF5FC;text-align:center;cursor:pointer;line-height:1.45;margin:2px;color:#2E75B6;font-weight:bold}
 .inp.fok{box-shadow:0 0 0 3px #9DC3E6;background:#EAF2FB}.inp.bad{border-color:#C00000;background:#FBE4E4}
 .inp.ok{border-color:#1E8449;color:#1E8449;background:#fff;cursor:default}
 .inp.g{border-color:#1E8449}.inp.o{border-color:#D35400}
@@ -57,7 +59,8 @@ function el(t,c,h){const x=document.createElement(t);if(c)x.className=c;if(h!=nu
 const MI='−';
 function zs(n){n=Math.round(n*100)/100;return String(n).replace('.',',').replace('-',MI);}
 function zk(n){return n<0?'('+zs(n)+')':zs(n);}
-function fm(t){return String(t).replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+function fm(t){return String(t).replace(/([A-Za-z])_([A-Za-z0-9])/g,'$1<sub>$2</sub>').replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+ if(k==='w')return '<span class="wu">√<span class="rad">'+a.trim()+'</span></span>';
  if(k==='>')return '<span class="pf">'+p[0]+'</span>';
  if(k==='v')return '<span class="vec"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
  if(k==='f')return '<span class="fr"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
@@ -230,8 +233,30 @@ function rundeProdukt(A,t,R){return [()=>{const c=el('div','');const s=A.teile.f
   const ok=()=>{fest(fa);if(t.satz)satz.innerHTML='Antwort: '+t.satz.replace('{x}',zs(t.A));};
   return karte(R,'Weiterrechnen',c,()=>{if(wert(fa)!==t.A){fa.classList.add('bad');return 'Pro m² braucht man '+zs(t.faktor)+' '+t.einheit+'. Rechne Fläche mal '+zs(t.faktor)+'.';}ok();return true;},()=>{setze(fa,t.A);ok();},'Fläche mal Menge pro m².');}];}
 
+/* ---------- Aufgabe vom Typ "schritte" (NEU 23.11.2026): Zeile mit Eingabefeldern ⟦Lösung⟧ je Schritt */
+function aufgabeSchritte(A){
+ const box=el('div','aufgabe schritte1');const rechts=el('div','ablauf');box.append(rechts);
+ const R={hilfen:A.hilfen||'wenig',schritte:0,gut:0};
+ rechts.append(el('div','box aufg',fm(A.text)));let si=0;
+ const karten=A.schritte.map(S=>()=>{const c=el('div','');if(S.auftrag)c.append(el('p','',fm(S.auftrag)));
+  const z=el('div','formel');z.innerHTML=fm(S.zeile).replace(/⟦([^⟧]*)⟧/g,(m,w)=>'<span class="inp" data-soll="'+w+'"> </span>');c.append(z);
+  const fs=[...z.querySelectorAll('.inp')];fs.forEach(f=>f.onclick=()=>{if(!f.classList.contains('fest'))fokus(f);});
+  const soll=fs.map(f=>parseFloat(f.dataset.soll.replace(MI,'-').replace(',','.')));
+  const fertigS=()=>fs.forEach(f=>fest(f));
+  return karte(R,S.titel,c,()=>{const w=fs.map(wert);if(w.some(isNaN))return 'Trage alle Zahlen ein.';
+    let ok=w.every((x,i)=>x===soll[i]);
+    (S.tausch||[]).forEach(([i,j])=>{if(!ok&&w[i]===soll[j]&&w[j]===soll[i]&&w.every((x,k)=>k===i||k===j||x===soll[k]))ok=true;});
+    if(ok){fertigS();return true;}
+    w.forEach((x,i)=>{if(x!==soll[i])fs[i].classList.add('bad');});return fm(S.hinweis||'Rechne noch einmal.');},
+   ()=>{fs.forEach((f,i)=>setze(f,soll[i]));fertigS();},S.tipp);});
+ R.weiter=()=>{if(si<karten.length){const k=karten[si++]();rechts.append(k);if(!LOES)setTimeout(()=>k.scrollIntoView({behavior:'smooth',block:'nearest'}),60);if(LOES)k._loese();return;}
+  if(LOES)return;
+  const s=el('div','box ende','🎉 Geschafft! '+R.gut+' von '+R.schritte+' Schritten beim ersten Versuch richtig.');rechts.append(s);if(A.onFertig)A.onFertig(s);};
+ setTimeout(()=>R.weiter(),0);return box;}
+
 /* ---------- Aufgabe aufbauen */
 function aufgabe(A){
+ if(A.typ==='schritte')return aufgabeSchritte(A);
  teileVorbereiten(A);
  const box=el('div','aufgabe');const links=el('div','skbox'),rechts=el('div','ablauf');box.append(links,rechts);
  const R={hilfen:A.hilfen||'wenig',schritte:0,gut:0,sk:{P:A.P,poly:A.poly||Object.keys(A.P).join(''),dia:A.diagonale},

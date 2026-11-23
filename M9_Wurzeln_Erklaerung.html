@@ -40,7 +40,7 @@ function el(t,c,h){const x=document.createElement(t);if(c)x.className=c;if(h!=nu
 const MI='−';
 function zs(n){n=Math.round(n*100)/100;return String(n).replace('.',',').replace('-',MI);}
 function zk(n){return n<0?'('+zs(n)+')':zs(n);}
-function fm(t){return String(t).replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+function fm(t){return String(t).replace(/([A-Za-z])_([A-Za-z0-9])/g,'$1<sub>$2</sub>').replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
  if(k==='w')return '<span class="wu">√<span class="rad">'+a.trim()+'</span></span>';
  if(k==='>')return '<span class="pf">'+p[0]+'</span>';
  if(k==='v')return '<span class="vec"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
