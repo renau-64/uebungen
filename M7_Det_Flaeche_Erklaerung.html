@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flächeninhalt mit der Determinante – Erklärung</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap"><style>
+*{box-sizing:border-box}
+:root{--blau:#2E75B6;--lila:#7030A0;--gruen:#1E8449;--orange:#D35400;--rot:#C00000;--rand:#222}
+body{margin:0;font-family:"Comic Sans MS","Comic Neue",cursive;background:#F4F7FB;color:#222;font-size:19px;line-height:1.45}
+.wrap{max-width:1100px;margin:0 auto;padding:14px 14px 40px}
+h1{font-size:24px;margin:4px 0 12px;padding:8px 16px;background:#F2F2F2;border:2px solid var(--rand);border-radius:14px;display:inline-block}
+.box{background:#fff;border:2px solid var(--rand);border-radius:14px;padding:12px 16px;margin:12px 0}
+.aufg{border-width:2.5px}
+.vec,.det,.fr{display:inline-flex;vertical-align:middle;margin:0 3px}
+.vec,.fr{flex-direction:column;text-align:center}
+.vec{border-left:2px solid #222;border-right:2px solid #222;border-radius:12px;padding:0 8px;line-height:1.25}
+.fr>span:first-child{border-bottom:2px solid #222;padding:0 3px}.fr{font-size:.85em;line-height:1.15}
+.det{display:inline-grid;grid-template-columns:auto auto;gap:0 14px;border-left:2px solid #222;border-right:2px solid #222;padding:0 8px;line-height:1.3;position:relative;text-align:center}
+.pf{display:inline-block;position:relative;padding-top:.32em;line-height:1}
+.pf::before{content:"";position:absolute;left:0;right:3px;top:.1em;border-top:2px solid currentColor}
+.pf::after{content:"";position:absolute;right:0;top:-.07em;width:.28em;height:.28em;border:solid currentColor;border-width:2px 2px 0 0;transform:rotate(45deg)}
+.formel{font-size:21px;margin:6px 0;line-height:2.1}
+.g{color:var(--gruen);font-weight:bold}.o{color:var(--orange);font-weight:bold}.b1{color:var(--blau);font-weight:bold}.b2{color:var(--lila);font-weight:bold}
+svg.sk{width:100%;height:auto;max-height:420px;background:#fff;border:2px solid var(--rand);border-radius:12px;display:block}
+.btn{font-family:inherit;font-size:18px;padding:9px 16px;border-radius:12px;border:2px solid #222;background:#fff;cursor:pointer;margin:4px 4px 4px 0;min-height:44px;color:#222}
+.btn.main{background:#222;color:#fff}.btn.sel{background:#EAF2FB;border-color:var(--blau);box-shadow:0 0 0 3px #9DC3E6}
+.btn:disabled{opacity:.55;cursor:default}
+.fisch{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.fisch path{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:zieh 1.4s forwards}
+.fisch path.p2{animation-delay:1.3s}.fisch path.p3{animation-delay:2.4s}
+.fisch.wart path{animation:none}
+.det.mitkopf{border:none;padding:0 10px}
+.det.mitkopf::before,.det.mitkopf::after{content:"";position:absolute;top:1.45em;bottom:0;border-left:2px solid #222}
+.det.mitkopf::before{left:0}.det.mitkopf::after{right:0}
+.det .spk{font-size:.85em;line-height:1.2;padding-bottom:.1em}
+@keyframes zieh{to{stroke-dashoffset:0}}
+.merke{border-color:var(--rot)}.merke h2,.fehler h2{margin:0 0 6px;font-size:20px}
+.fehler{background:#FFF8E1;border-color:#BF9000}
+ul{margin:4px 0;padding-left:24px}
+.wu{white-space:nowrap;margin:0 1px}.rad{border-top:2px solid currentColor;padding:0 3px 0 2px;margin-left:1px}
+
+.karte h2{font-size:20px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+.nr{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#1F4E79;color:#fff;flex:none}
+.karte.mitbild{display:grid;grid-template-columns:1fr;gap:12px}
+.karte.mitbild svg.sk{max-width:420px;margin:0 auto}
+@media (min-width:720px){.karte.mitbild{grid-template-columns:1.25fr 1fr;align-items:center}}
+</style></head><body><div class="wrap" id="app"></div><script>
+const $=(s,e=document)=>e.querySelector(s);
+function el(t,c,h){const x=document.createElement(t);if(c)x.className=c;if(h!=null)x.innerHTML=h;return x;}
+const MI='−';
+function zs(n){n=Math.round(n*100)/100;return String(n).replace('.',',').replace('-',MI);}
+function zk(n){return n<0?'('+zs(n)+')':zs(n);}
+function fm(t){return String(t).replace(/([A-Za-z])_([A-Za-z0-9])/g,'$1<sub>$2</sub>').replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+ if(k==='w')return '<span class="wu">√<span class="rad">'+a.trim()+'</span></span>';
+ if(k==='>')return '<span class="pf">'+p[0]+'</span>';
+ if(k==='v')return '<span class="vec"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
+ if(k==='f')return '<span class="fr"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
+ return '<span class="det"><span>'+p[0]+'</span><span>'+p[1]+'</span><span>'+p[2]+'</span><span>'+p[3]+'</span></span>';});}
+function sub(p,q){return [q[0]-p[0],q[1]-p[1]];}
+function det2(u,v){return u[0]*v[1]-v[0]*u[1];}
+const FARBE={b1:'#2E75B6',b2:'#7030A0',rot:'#C00000',gruen:'#1E8449',grau:'#7F7F7F'};
+/* Skizze: o={P:{A:[x,y]}, poly:'ABC', dia:'KM', fill:'ABC', pfeile:[['A','B','b1']], bogen:{bei,von,nach,farbe}} */
+function skizze(o){
+ const P=o.P, xs=Object.values(P).map(p=>p[0]), ys=Object.values(P).map(p=>p[1]);
+ const x0=Math.min(0,...xs)-1,x1=Math.max(0,...xs)+1,y0=Math.min(0,...ys)-1,y1=Math.max(0,...ys)+1,u=34;
+ const W=(x1-x0)*u,H=(y1-y0)*u,X=x=>(x-x0)*u,Y=y=>(y1-y)*u;let s='';
+ s+='<defs>'+Object.entries(FARBE).map(([k,c])=>'<marker id="m'+k+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="'+c+'"/></marker>').join('')+'</defs>';
+ for(let x=x0;x<=x1;x++)s+='<line x1="'+X(x)+'" y1="0" x2="'+X(x)+'" y2="'+H+'" stroke="#DDE3EA"/>';
+ for(let y=y0;y<=y1;y++)s+='<line x1="0" y1="'+Y(y)+'" x2="'+W+'" y2="'+Y(y)+'" stroke="#DDE3EA"/>';
+ s+='<line x1="0" y1="'+Y(0)+'" x2="'+(W-2)+'" y2="'+Y(0)+'" stroke="#444" stroke-width="1.6" marker-end="url(#mgrau)"/>';
+ s+='<line x1="'+X(0)+'" y1="'+H+'" x2="'+X(0)+'" y2="2" stroke="#444" stroke-width="1.6" marker-end="url(#mgrau)"/>';
+ for(let x=x0+1;x<x1;x++)if(x)s+='<text x="'+X(x)+'" y="'+(Y(0)+15)+'" font-size="11" text-anchor="middle" fill="#666">'+zs(x)+'</text>';
+ for(let y=y0+1;y<y1;y++)if(y)s+='<text x="'+(X(0)-5)+'" y="'+(Y(y)+4)+'" font-size="11" text-anchor="end" fill="#666">'+zs(y)+'</text>';
+ const pts=n=>n.split('').map(k=>X(P[k][0])+','+Y(P[k][1])).join(' ');
+ if(o.poly)s+='<polygon points="'+pts(o.poly)+'" fill="#EAF2FB" stroke="#1F4E79" stroke-width="2"/>';
+ if(o.fill)s+='<polygon points="'+pts(o.fill)+'" fill="#FFE699" fill-opacity=".75" stroke="#BF9000" stroke-width="2"/>';
+ if(o.dia){const a=P[o.dia[0]],b=P[o.dia[1]];s+='<line x1="'+X(a[0])+'" y1="'+Y(a[1])+'" x2="'+X(b[0])+'" y2="'+Y(b[1])+'" stroke="#1F4E79" stroke-width="2" stroke-dasharray="6 4"/>';}
+ (o.pfeile||[]).forEach(([a,b,f])=>{const p=P[a],q=P[b];s+='<line x1="'+X(p[0])+'" y1="'+Y(p[1])+'" x2="'+X(q[0])+'" y2="'+Y(q[1])+'" stroke="'+FARBE[f]+'" stroke-width="4" marker-end="url(#m'+f+')"/>';});
+ if(o.bogen){const B=o.bogen,p=P[B.bei],v1=sub(p,P[B.von]),v2=sub(p,P[B.nach]),r=1.25;
+  const a1=Math.atan2(v1[1],v1[0]);let a2=Math.atan2(v2[1],v2[0]);const ccw=det2(v1,v2)>0;
+  const sx=X(p[0]+r*Math.cos(a1)),sy=Y(p[1]+r*Math.sin(a1)),ex=X(p[0]+r*Math.cos(a2)),ey=Y(p[1]+r*Math.sin(a2));
+  const c=FARBE[B.farbe||(ccw?'gruen':'rot')];
+  s+='<path d="M'+sx+','+sy+' A'+(r*u)+','+(r*u)+' 0 0 '+(ccw?0:1)+' '+ex+','+ey+'" fill="none" stroke="'+c+'" stroke-width="3.5" marker-end="url(#m'+(B.farbe||(ccw?'gruen':'rot'))+')"/>';}
+ const cx=xs.reduce((a,b)=>a+b,0)/xs.length,cy=ys.reduce((a,b)=>a+b,0)/ys.length;
+ Object.entries(P).forEach(([n,p])=>{let dx=p[0]-cx,dy=p[1]-cy;const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;
+  s+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="4.5" fill="#222"/><text x="'+(X(p[0])+dx*16)+'" y="'+(Y(p[1])-dy*16+6)+'" font-size="17" font-weight="bold" text-anchor="middle" font-family="Comic Sans MS,Comic Neue,cursive">'+n+'</text>';});
+ return '<svg class="sk" viewBox="-4 -4 '+(W+8)+' '+(H+8)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
+/* Fisch über einer Determinante: |a b; c d|, Weg a→d, dann c→b und d–b (wie im Merkkasten 2.6) */
+function fischHTML(a,b,c,d,mitFisch){
+ const f=mitFisch?'<svg class="fisch'+(mitFisch==='wart'?' wart':'')+'" viewBox="0 0 100 100" preserveAspectRatio="none"><path class="p1" d="M31,22 L69,78" stroke="#1E8449"/><path class="p2" d="M31,78 L69,22" stroke="#D35400"/><path class="p3" d="M69,22 L69,78" stroke="#D35400"/></svg>':'';
+ return '<span class="det" style="font-size:1.45em;padding:4px 14px;gap:6px 58px"><span class="g">'+a+'</span><span class="o">'+b+'</span><span class="o">'+c+'</span><span class="g">'+d+'</span>'+f+'</span>';}
+</script><script>const DATA={"titel": "Flächeninhalt mit der Determinante", "aufgabe": "Berechne den Flächeninhalt des Parallelogramms EFGH mit E (1 | 1), F (6 | 2), G (7 | 5) und H (2 | 4) und des Dreiecks EFH.", "schritte": [{"titel": "Was ist eine Determinante?", "text": "Zwei Vektoren stehen als Spalten zwischen zwei senkrechten Strichen. Man rechnet über Kreuz: erst links oben mal rechts unten, dann minus links unten mal rechts oben.", "fisch": [4, 1, 2, 3], "rechnung": ["{d 4|1|2|3} = 4 · 3 − 2 · 1 = 10"]}, {"titel": "Zwei Vektoren von einer Ecke aus", "text": "Für das Parallelogramm EFGH starten beide Vektoren in derselben Ecke, hier in E. Rechne Spitze minus Fuß.", "rechnung": ["{>EF} = {v 6 − 1|2 − 1} = {v 5|1}", "{>EH} = {v 2 − 1|4 − 1} = {v 1|3}"], "skizze": {"pfeile": ["EF", "EH"]}}, {"titel": "Reihenfolge: gegen den Uhrzeigersinn", "text": "Der erste Vektor dreht sich gegen den Uhrzeigersinn zum zweiten. Von {>EF} zu {>EH} geht es gegen den Uhrzeigersinn (grüner Bogen). Also: erst {>EF}, dann {>EH}.", "skizze": {"pfeile": ["EF", "EH"], "bogen": "EFH"}}, {"titel": "Als Spalten in die Determinante", "text": "Links steht der erste Vektor {>EF}, rechts der zweite Vektor {>EH}. Die Determinante ist der Flächeninhalt des Parallelogramms.", "rechnung": ["A = {d 5|1|1|3} FE"], "spalten": ["EF", "EH"]}, {"titel": "Fisch-Regel: über Kreuz rechnen", "text": "Erst links oben mal rechts unten, dann minus links unten mal rechts oben.", "fisch": [5, 1, 1, 3], "rechnung": ["A = (5 · 3 − 1 · 1) FE = 14 FE"]}, {"titel": "Dreieck: die Hälfte", "text": "Die Diagonale FH teilt das Parallelogramm in zwei gleich große Dreiecke. Das Dreieck EFH ist die Hälfte.", "rechnung": ["A = {f 1|2} · {d 5|1|1|3} FE = {f 1|2} · 14 FE = 7 FE"]}], "merke": ["Parallelogramm: A = {d a|c|b|d} FE = (a · d − b · c) FE", "Dreieck: A = {f 1|2} · {d a|c|b|d} FE = {f 1|2} · (a · d − b · c) FE", "Beide Vektoren von einer Ecke aus, der erste dreht sich gegen den Uhrzeigersinn zum zweiten."], "fehler": ["Beim Parallelogramm mal {f 1|2} gerechnet: Dort gibt es kein {f 1|2}.", "Vektoren im Uhrzeigersinn gewählt: Das Ergebnis wird negativ.", "Vektoren von zwei verschiedenen Ecken aus gebildet.", "Vektoren waagrecht statt senkrecht in die Determinante geschrieben."], "P": {"E": [1, 1], "F": [6, 2], "G": [7, 5], "H": [2, 4]}, "poly": "EFGH", "uebung_url": "https://renau-64.github.io/uebungen/M7_Det_Flaeche_Uebung.html"};</script><script>
+const D=DATA;
+const app=$('#app');
+app.append(el('h1','',D.titel));
+const kopf=el('div','box aufg','<b>Beispiel:</b> '+fm(D.aufgabe));app.append(kopf);
+D.schritte.forEach((s,i)=>{
+ const k=el('div','box karte');
+ const links=el('div','');
+ links.append(el('h2','','<span class="nr">'+(i+1)+'</span> '+fm(s.titel)));
+ if(s.text)links.append(el('p','',fm(s.text)));
+ if(s.fisch){const [a,b,c,d]=s.fisch.map(zs),[ka,kb,kc,kd]=s.fisch.map(zk);const z=el('div','formel',fischHTML(a,b,c,d,'wart')+' &nbsp;➜&nbsp; <span class="g">'+ka+' · '+kd+'</span> − <span class="o">'+kc+' · '+kb+'</span>');links.append(z);
+  const sv=z.querySelector('.fisch'),los=()=>{sv.classList.add('wart');sv.getBoundingClientRect();sv.classList.remove('wart');};
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();los();}},{threshold:.6});io.observe(z);}else los();}
+ (s.rechnung||[]).forEach(r=>links.append(el('div','formel',fm(r))));
+ if(s.spalten){const dt=links.querySelector('.formel .det');if(dt){dt.classList.add('mitkopf');
+  dt.prepend(el('span','spk b2',fm('{>'+s.spalten[1]+'}')));dt.prepend(el('span','spk b1',fm('{>'+s.spalten[0]+'}')));}}
+ k.append(links);
+ if(s.skizze){k.classList.add('mitbild');const o={P:D.P,poly:D.poly};
+  o.pfeile=(s.skizze.pfeile||[]).map((v,j)=>[v[0],v[1],j?'b2':'b1']);
+  if(s.skizze.bogen){const b=s.skizze.bogen;o.bogen={bei:b[0],von:b[1],nach:b[2]};}
+  k.append(el('div','',skizze(o)));}
+ app.append(k);});
+if(D.merke&&D.merke.length){const m=el('div','box merke','<h2><span style="color:#C00000">!</span> Merke</h2>');const u=el('ul');D.merke.forEach(t=>u.append(el('li','',fm(t))));m.append(u);app.append(m);}
+if(D.fehler&&D.fehler.length){const m=el('div','box fehler','<h2>⚠ Typische Fehler</h2>');const u=el('ul');D.fehler.forEach(t=>u.append(el('li','',fm(t))));m.append(u);app.append(m);}
+if(D.uebung_url){const a=el('a','btn main','Jetzt digital üben ➜');a.href=D.uebung_url;a.style.display='inline-block';a.style.textDecoration='none';app.append(a);}
+</script></body></html>
