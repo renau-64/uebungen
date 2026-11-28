@@ -23,6 +23,11 @@ svg.sk{width:100%;height:auto;max-height:420px;background:#fff;border:2px solid 
 .fisch{position:absolute;inset:0;pointer-events:none;overflow:visible}
 .fisch path{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:zieh 1.4s forwards}
 .fisch path.p2{animation-delay:1.3s}.fisch path.p3{animation-delay:2.4s}
+.fisch.wart path{animation:none}
+.det.mitkopf{border:none;padding:0 10px}
+.det.mitkopf::before,.det.mitkopf::after{content:"";position:absolute;top:1.45em;bottom:0;border-left:2px solid #222}
+.det.mitkopf::before{left:0}.det.mitkopf::after{right:0}
+.det .spk{font-size:.85em;line-height:1.2;padding-bottom:.1em}
 @keyframes zieh{to{stroke-dashoffset:0}}
 .merke{border-color:var(--rot)}.merke h2,.fehler h2{margin:0 0 6px;font-size:20px}
 .fehler{background:#FFF8E1;border-color:#BF9000}
@@ -59,7 +64,8 @@ function el(t,c,h){const x=document.createElement(t);if(c)x.className=c;if(h!=nu
 const MI='−';
 function zs(n){n=Math.round(n*100)/100;return String(n).replace('.',',').replace('-',MI);}
 function zk(n){return n<0?'('+zs(n)+')':zs(n);}
-function fm(t){return String(t).replace(/([A-Za-z])_([A-Za-z0-9])/g,'$1<sub>$2</sub>').replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+function fm(t){return String(t).replace(/([A-Za-z])_([A-Za-z0-9])/g,'$1<sub>$2</sub>').replace(/([A-Z]) \(([^()|]*\|[^()]*)\)/g,'<span style="white-space:nowrap">$1 ($2)</span>').replace(/\{(v|d|f|>|w|s)\s*([^{}]*)\}/g,(m,k,a)=>{const p=a.split('|').map(x=>x.trim());
+ if(k==='s')return '<span style="text-decoration:overline">'+p[0]+'</span>';
  if(k==='w')return '<span class="wu">√<span class="rad">'+a.trim()+'</span></span>';
  if(k==='>')return '<span class="pf">'+p[0]+'</span>';
  if(k==='v')return '<span class="vec"><span>'+p[0]+'</span><span>'+p[1]+'</span></span>';
@@ -80,6 +86,9 @@ function skizze(o){
  s+='<line x1="'+X(0)+'" y1="'+H+'" x2="'+X(0)+'" y2="2" stroke="#444" stroke-width="1.6" marker-end="url(#mgrau)"/>';
  for(let x=x0+1;x<x1;x++)if(x)s+='<text x="'+X(x)+'" y="'+(Y(0)+15)+'" font-size="11" text-anchor="middle" fill="#666">'+zs(x)+'</text>';
  for(let y=y0+1;y<y1;y++)if(y)s+='<text x="'+(X(0)-5)+'" y="'+(Y(y)+4)+'" font-size="11" text-anchor="end" fill="#666">'+zs(y)+'</text>';
+ s+='<text x="'+(X(0)-5)+'" y="'+(Y(0)+15)+'" font-size="11" text-anchor="end" fill="#666">0</text>';   // 28.11.2026: Ursprung, x und y beschriften (Mentorin)
+ s+='<text x="'+(W-4)+'" y="'+(Y(0)-7)+'" font-size="15" font-style="italic" text-anchor="end" fill="#222">x</text>';
+ s+='<text x="'+(X(0)+8)+'" y="14" font-size="15" font-style="italic" fill="#222">y</text>';
  const pts=n=>n.split('').map(k=>X(P[k][0])+','+Y(P[k][1])).join(' ');
  if(o.poly)s+='<polygon points="'+pts(o.poly)+'" fill="#EAF2FB" stroke="#1F4E79" stroke-width="2"/>';
  if(o.fill)s+='<polygon points="'+pts(o.fill)+'" fill="#FFE699" fill-opacity=".75" stroke="#BF9000" stroke-width="2"/>';
@@ -96,9 +105,9 @@ function skizze(o){
  return '<svg class="sk" viewBox="-4 -4 '+(W+8)+' '+(H+8)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
 /* Fisch über einer Determinante: |a b; c d|, Weg a→d, dann c→b und d–b (wie im Merkkasten 2.6) */
 function fischHTML(a,b,c,d,mitFisch){
- const f=mitFisch?'<svg class="fisch" viewBox="0 0 100 100" preserveAspectRatio="none"><path class="p1" d="M31,22 L69,78" stroke="#1E8449"/><path class="p2" d="M31,78 L69,22" stroke="#D35400"/><path class="p3" d="M69,22 L69,78" stroke="#D35400"/></svg>':'';
+ const f=mitFisch?'<svg class="fisch'+(mitFisch==='wart'?' wart':'')+'" viewBox="0 0 100 100" preserveAspectRatio="none"><path class="p1" d="M31,22 L69,78" stroke="#1E8449"/><path class="p2" d="M31,78 L69,22" stroke="#D35400"/><path class="p3" d="M69,22 L69,78" stroke="#D35400"/></svg>':'';
  return '<span class="det" style="font-size:1.45em;padding:4px 14px;gap:6px 58px"><span class="g">'+a+'</span><span class="o">'+b+'</span><span class="o">'+c+'</span><span class="g">'+d+'</span>'+f+'</span>';}
-</script><script>const DATA={"titel": "Flächeninhalt mit der Determinante", "training": true, "aufgaben": [{"titel": "1 a", "hilfen": "voll", "text": "Berechne den Flächeninhalt des Dreiecks BCD mit B (1 | 1), C (6 | 2) und D (3 | 5).", "teile": [{"art": "dreieck", "ecken": "BCD"}], "P": {"B": [1, 1], "C": [6, 2], "D": [3, 5]}}, {"titel": "1 b", "hilfen": "voll", "text": "Berechne den Flächeninhalt des Dreiecks PQR mit P (−2 | 1), Q (1 | 4) und R (3 | −1).", "teile": [{"art": "dreieck", "ecken": "PQR"}], "P": {"P": [-2, 1], "Q": [1, 4], "R": [3, -1]}}, {"titel": "2 a", "text": "Berechne den Flächeninhalt des Parallelogramms RSTU mit R (−1 | −2), S (4 | −1), T (6 | 3) und U (1 | 2).", "teile": [{"art": "parallelogramm", "ecken": "RSTU"}], "P": {"R": [-1, -2], "S": [4, -1], "T": [6, 3], "U": [1, 2]}}, {"titel": "2 b", "text": "Berechne den Flächeninhalt des Parallelogramms EFGH mit E (−3 | 1), F (2 | −1), G (4 | 2) und H (−1 | 4).", "teile": [{"art": "parallelogramm", "ecken": "EFGH"}], "P": {"E": [-3, 1], "F": [2, -1], "G": [4, 2], "H": [-1, 4]}}, {"titel": "3", "diagonale": "KM", "text": "Das Viereck KLMN hat die Eckpunkte K (−2 | −1), L (4 | −2), M (5 | 3) und N (0 | 4). Die Diagonale [KM] zerlegt es in die Dreiecke KLM und KMN.", "teile": [{"art": "dreieck", "ecken": "KLM", "name": "A₁", "frage": "a) Berechne den Flächeninhalt des Dreiecks KLM."}, {"art": "dreieck", "ecken": "KMN", "name": "A₂", "frage": "b) Berechne den Flächeninhalt des Dreiecks KMN."}, {"art": "summe", "frage": "c) Berechne den Flächeninhalt des Vierecks KLMN."}], "P": {"K": [-2, -1], "L": [4, -2], "M": [5, 3], "N": [0, 4]}}, {"titel": "4", "diagonale": "PR", "einheit": "m²", "text": "Ein Gartenbeet hat die Eckpunkte P (1 | 0), Q (7 | 1), R (6 | 5) und S (2 | 6) (Angaben in m). Zerlege es mit der Diagonale [PR].", "teile": [{"art": "dreieck", "ecken": "PQR", "name": "A₁", "frage": "Dreieck PQR"}, {"art": "dreieck", "ecken": "PRS", "name": "A₂", "frage": "Dreieck PRS"}, {"art": "summe", "frage": "a) Berechne den Flächeninhalt des Beets in m²."}, {"art": "produkt", "faktor": 30, "einheit": "g", "frage": "b) Pro m² braucht man 30 g Rasensamen. Berechne die Menge für das Beet.", "satz": "Man braucht {x} g Rasensamen."}], "P": {"P": [1, 0], "Q": [7, 1], "R": [6, 5], "S": [2, 6]}}]};</script><script>
+</script><script>const DATA={"titel": "Flächeninhalt mit der Determinante", "training": true, "aufgaben": [{"titel": "1 a", "hilfen": "voll", "text": "Berechne den Flächeninhalt des Dreiecks BCD mit B (1 | 1), C (6 | 2) und D (3 | 5).", "teile": [{"art": "dreieck", "ecken": "BCD"}], "P": {"B": [1, 1], "C": [6, 2], "D": [3, 5]}}, {"titel": "1 b", "hilfen": "voll", "text": "Berechne den Flächeninhalt des Dreiecks PQR mit P (−2 | 1), Q (1 | 4) und R (3 | −1).", "teile": [{"art": "dreieck", "ecken": "PQR"}], "P": {"P": [-2, 1], "Q": [1, 4], "R": [3, -1]}}, {"titel": "2 a", "text": "Berechne den Flächeninhalt des Parallelogramms RSTU mit R (−1 | −2), S (4 | −1), T (6 | 3) und U (1 | 2).", "teile": [{"art": "parallelogramm", "ecken": "RSTU"}], "P": {"R": [-1, -2], "S": [4, -1], "T": [6, 3], "U": [1, 2]}}, {"titel": "2 b", "text": "Berechne den Flächeninhalt des Parallelogramms EFGH mit E (−3 | 1), F (2 | −1), G (4 | 2) und H (−1 | 4).", "teile": [{"art": "parallelogramm", "ecken": "EFGH"}], "P": {"E": [-3, 1], "F": [2, -1], "G": [4, 2], "H": [-1, 4]}}, {"titel": "3", "diagonale": "KM", "text": "Das Viereck KLMN hat die Eckpunkte K (−2 | −1), L (4 | −2), M (5 | 3) und N (0 | 4). Die Diagonale [KM] zerlegt es in die Dreiecke KLM und KMN.", "teile": [{"art": "dreieck", "ecken": "KLM", "name": "A₁", "frage": "a) Berechne den Flächeninhalt des Dreiecks KLM."}, {"art": "dreieck", "ecken": "KMN", "name": "A₂", "frage": "b) Berechne den Flächeninhalt des Dreiecks KMN."}, {"art": "summe", "frage": "c) Berechne den Flächeninhalt des Vierecks KLMN."}], "P": {"K": [-2, -1], "L": [4, -2], "M": [5, 3], "N": [0, 4]}}, {"titel": "4", "diagonale": "PR", "einheit": "m²", "text": "Ein Gartenbeet hat die Eckpunkte P (1 | 0), Q (7 | 1), R (6 | 5) und S (2 | 6). Es gilt 1 LE ≙ 1 m. Zerlege es mit der Diagonale [PR].", "teile": [{"art": "dreieck", "ecken": "PQR", "name": "A₁", "frage": "Dreieck PQR"}, {"art": "dreieck", "ecken": "PRS", "name": "A₂", "frage": "Dreieck PRS"}, {"art": "summe", "frage": "a) Berechne den Flächeninhalt des Beets in m²."}, {"art": "produkt", "faktor": 30, "einheit": "g", "frage": "b) Pro m² braucht man 30 g Rasensamen. Berechne die Menge für das Beet.", "satz": "Man braucht {x} g Rasensamen."}], "P": {"P": [1, 0], "Q": [7, 1], "R": [6, 5], "S": [2, 6]}}]};</script><script>
 const D=DATA;const LOES=new URLSearchParams(location.search).get('loesung')==='1';
 const app=$('#app');app.append(el('h1','',D.titel));
 /* ---------- Tastenfeld (Tablet: kein Systemtastatur-Wechsel für das Minuszeichen) */
@@ -165,7 +174,7 @@ function rundeTeil(A,t,R,box,cache){
  const schritte=[];
  if(t.art==='parallelogramm'){schritte.push(()=>{
   const opt=[t.ecken[1],t.ecken[2],t.ecken[3]];const gew=new Set();const c=el('div','');
-  c.append(el('p','',fm('Wähle die zwei Seiten, die sich in '+S+' treffen.')));
+  c.append(el('p','',fm('Wähle die zwei Vektoren entlang der Seiten, die sich in '+S+' treffen.')));
   const bs=opt.map(n=>{const b=el('button','btn',fm('{>'+S+n+'}'));b.onclick=()=>{if(gew.has(n)){gew.delete(n);b.classList.remove('sel');}else if(gew.size<2){gew.add(n);b.classList.add('sel');}};c.append(b);return b;});
   const fertigBs=()=>bs.forEach(b=>b.disabled=true);
   return karte(R,'Seiten wählen',c,()=>{if(gew.size<2)return 'Wähle zwei Vektoren.';
